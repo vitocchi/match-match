@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	card, err := card.NewCard(card.Spade, 1)
-	fmt.Printf("suit = %+v\n", card)
-	fmt.Printf("error = %+v\n", err)
+	ms := card.NewMemories()
+	fmt.Println(ms)
 }

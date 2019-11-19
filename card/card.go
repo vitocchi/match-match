@@ -1,6 +1,9 @@
 package card
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type Suit int
 
@@ -10,6 +13,20 @@ const (
 	Diamond
 	Club
 )
+
+func (s Suit) String() string {
+	switch s {
+	case Spade:
+		return "Spade"
+	case Heart:
+		return "Heart"
+	case Diamond:
+		return "Diamond"
+	case Club:
+		return "Club"
+	}
+	return ""
+}
 
 type Card struct {
 	suit   Suit
@@ -29,4 +46,8 @@ func NewCard(s Suit, n int) (Card, error) {
 
 func isNumberValid(n int) bool {
 	return n >= 1 && n <= 13
+}
+
+func (c Card) String() string {
+	return fmt.Sprintf("suit:%s, number:%d", c.suit, c.number)
 }
