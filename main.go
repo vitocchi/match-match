@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
-	ms := card.NewMemories()
-	fmt.Println(ms)
+	table := card.NewTable()
+	table.ExecGame()
+	fmt.Println(table)
 }
