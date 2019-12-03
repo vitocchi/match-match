@@ -36,5 +36,5 @@ func isNumberValid(n int) bool {
 }
 
 func (c Card) String() string {
-	return fmt.Sprintf("suit:%s, number:%d, lastFlippedAt: %d", c.suit, c.number, c.lastFlippeddAt)
+	return fmt.Sprintf("%s%2d lastFlippedAt:%3d", c.suit, c.number, c.lastFlippeddAt)
 }

@@ -52,6 +52,21 @@ func (cs Cards) drop(c Card) Cards {
 	return cs
 }
 
+func (cs Cards) flip(c Card, t Turn) Cards {
+	for key, element := range cs {
+		if c.equals(&element) {
+			element.lastFlippeddAt = t
+			ncs := append(cs[:key], element)
+			ncs = append(ncs, cs[key+1:]...)
+			//新しいスライスを用意することがポイント
+			n := make(Cards, len(cs))
+			copy(n, cs)
+			return n
+		}
+	}
+	return cs
+}
+
 func (cs Cards) String() string {
 	var str string
 	for _, m := range cs {
