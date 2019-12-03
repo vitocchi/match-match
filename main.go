@@ -10,7 +10,7 @@ import (
 
 type RandomStrategy struct{}
 
-func (s *RandomStrategy) pickCards(cs card.Cards) [2]card.Card {
+func (s *RandomStrategy) PickCards(cs card.Cards) [2]card.Card {
 	first := rand.Intn(len(cs))
 	var second int
 	for {
@@ -26,6 +26,6 @@ func main() {
 	p := make([]table.Player, 1, 1)
 	p[0] = table.NewPlayer(&RandomStrategy{})
 	rand.Seed(time.Now().UnixNano())
-	table := table.NewTable()
+	table := table.NewTable(p)
 	table.ExecGame()
 }

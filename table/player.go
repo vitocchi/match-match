@@ -1,9 +1,9 @@
-package card
+package table
 
 import "github.com/vitocchi/match-match/table/card"
 
 type Strategy interface {
-	pickCards(cs card.Cards) [2]card.Card
+	PickCards(cs card.Cards) [2]card.Card
 }
 
 type Player struct {
@@ -17,7 +17,7 @@ func NewPlayer(s Strategy) Player {
 	}
 }
 func (p *Player) pickCards(cs card.Cards) [2]card.Card {
-	return p.strategy.pickCards(cs)
+	return p.strategy.PickCards(cs)
 }
 
 func (p *Player) getPoint() {
