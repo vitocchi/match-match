@@ -27,7 +27,7 @@ func (c *Card) equals(other *Card) bool {
 	return c.suit == other.suit && c.number == other.number
 }
 
-func (c *Card) isPair(other *Card) bool {
+func (c *Card) IsPair(other *Card) bool {
 	return c.suit != other.suit && c.number == other.number
 }
 

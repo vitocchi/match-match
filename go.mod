@@ -1,3 +1,3 @@
-module github.com/vitocchi/macth-match
+module github.com/vitocchi/match-match
 
 go 1.12

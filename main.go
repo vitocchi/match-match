@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/vitocchi/match-match/table"
 	"github.com/vitocchi/match-match/table/card"
 )
 
@@ -22,9 +23,9 @@ func (s *RandomStrategy) pickCards(cs card.Cards) [2]card.Card {
 }
 
 func main() {
-	p := make([]card.Player, 1, 1)
-	p[0] = card.NewPlayer(&RandomStrategy{})
+	p := make([]table.Player, 1, 1)
+	p[0] = table.NewPlayer(&RandomStrategy{})
 	rand.Seed(time.Now().UnixNano())
-	table := card.NewTable()
+	table := table.NewTable()
 	table.ExecGame()
 }

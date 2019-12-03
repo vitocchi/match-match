@@ -10,7 +10,7 @@ type Table struct {
 	cards              card.Cards
 	players            []Player
 	currentPlayerIndex uint
-	turn               Turn
+	turn               card.Turn
 }
 
 // TODO Playersは外部から注入

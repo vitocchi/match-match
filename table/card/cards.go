@@ -39,7 +39,7 @@ func NewCards() Cards {
 	return cs
 }
 
-func (cs Cards) drop(c Card) Cards {
+func (cs Cards) Drop(c Card) Cards {
 	for key, element := range cs {
 		if c.equals(&element) {
 			cs = append(cs[:key], cs[key+1:]...)
@@ -52,7 +52,7 @@ func (cs Cards) drop(c Card) Cards {
 	return cs
 }
 
-func (cs Cards) flip(c Card, t Turn) Cards {
+func (cs Cards) Flip(c Card, t Turn) Cards {
 	for key, element := range cs {
 		if c.equals(&element) {
 			element.lastFlippeddAt = t
