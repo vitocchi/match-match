@@ -6,9 +6,10 @@ import (
 )
 
 type Table struct {
-	cards  Cards
-	player Player
-	turn   Turn
+	cards              Cards
+	players            []Player
+	currentPlayerIndex uint
+	turn               Turn
 }
 
 type Player struct {
@@ -38,10 +39,12 @@ func (p *Player) getPoint() {
 	p.point++
 }
 
+// TODO Playersは外部から注入
 func NewTable() Table {
+	p := make([]Player, 4, 4)
 	return Table{
-		cards:  NewCards(),
-		player: Player{},
+		cards:   NewCards(),
+		players: p,
 	}
 }
 
@@ -49,11 +52,11 @@ func (t *Table) ExecGame() {
 	for t.isGameGoing() {
 		t.execOneTurn()
 	}
-	fmt.Println("point:", t.player.point)
+	fmt.Println(t.players)
 }
 
 func (t *Table) execOneTurn() {
-	cs := t.player.pickCards(t.cards)
+	cs := t.currentPlayer().pickCards(t.cards)
 	fmt.Println()
 	fmt.Println("turn", t.turn)
 	fmt.Println(cs[0])
@@ -70,12 +73,13 @@ func (t *Table) handleMatch(cs [2]Card) {
 	fmt.Println("match!!")
 	t.cards = t.cards.drop(cs[0])
 	t.cards = t.cards.drop(cs[1])
-	t.player.getPoint()
+	t.currentPlayer().getPoint()
 }
 
 func (t *Table) handleUnmatch(cs [2]Card) {
 	t.cards = t.cards.flip(cs[0], t.turn)
 	t.cards = t.cards.flip(cs[1], t.turn)
+	t.changePlayer()
 }
 
 func (t *Table) isGameGoing() bool {
@@ -84,6 +88,14 @@ func (t *Table) isGameGoing() bool {
 
 func (t *Table) proceedTurn() {
 	t.turn++
+}
+
+func (t *Table) currentPlayer() *Player {
+	return &(t.players[t.currentPlayerIndex])
+}
+
+func (t *Table) changePlayer() {
+	t.currentPlayerIndex = (t.currentPlayerIndex + uint(1)) % uint(len(t.players))
 }
 
 func (t Table) String() string {
