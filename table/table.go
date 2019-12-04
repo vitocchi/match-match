@@ -14,7 +14,6 @@ type Table struct {
 	turn               card.Turn
 }
 
-// TODO Playersは外部から注入
 func NewTable(p []Player) Table {
 	return Table{
 		cards:   card.NewCards(),
@@ -22,7 +21,7 @@ func NewTable(p []Player) Table {
 	}
 }
 
-func (t *Table) ResetTable() {
+func (t *Table) Reset() {
 	t.startPlayerIndex = (t.startPlayerIndex + uint(1)) % uint(len(t.players))
 	t.cards = card.NewCards()
 	t.resetPlayersPoint()

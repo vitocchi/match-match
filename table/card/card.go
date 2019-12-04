@@ -16,7 +16,7 @@ func NewCard(s Suit, n int) (Card, error) {
 		return Card{
 			suit:           s,
 			number:         n,
-			lastFlippeddAt: INITIAL_TURN,
+			lastFlippeddAt: InitialTurn,
 		}, nil
 	}
 

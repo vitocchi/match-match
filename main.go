@@ -6,46 +6,39 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/vitocchi/match-match/strategy"
 	"github.com/vitocchi/match-match/table"
-	"github.com/vitocchi/match-match/table/card"
 )
-
-type RandomStrategy struct{}
-
-func (s *RandomStrategy) Name() string {
-	return "random"
-}
-
-func (s *RandomStrategy) PickCards(cs card.Cards) [2]card.Card {
-	first := rand.Intn(len(cs))
-	var second int
-	for {
-		second = rand.Intn(len(cs))
-		if first != second {
-			break
-		}
-	}
-	return [2]card.Card{cs[first], cs[second]}
-}
 
 const SimulationTime = 1000
 
+type SimulationResult []table.Result
+
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	p := make([]table.Player, 1, 1)
-	p[0] = table.NewPlayer(&RandomStrategy{})
+	p := initPlayers()
+	result := execSimulation(p)
+	fmt.Println(result.toJSON())
+}
+
+func initPlayers() []table.Player {
+	p := make([]table.Player, 0, 1)
+	p = append(p, table.NewPlayer(&strategy.RandomStrategy{}))
+	return p
+}
+
+func execSimulation(p []table.Player) SimulationResult {
 	t := table.NewTable(p)
 	results := make([]table.Result, 0, SimulationTime)
-
 	for i := 0; i < SimulationTime; i++ {
 		r := t.ExecGame()
 		results = append(results, r)
-		t.ResetTable()
+		t.Reset()
 	}
-	fmt.Println(resultsToJSON(results))
+	return results
 }
 
-func resultsToJSON(r []table.Result) string {
+func (r *SimulationResult) toJSON() string {
 	jsonBytes, err := json.Marshal(r)
 	if err != nil {
 		panic(err)

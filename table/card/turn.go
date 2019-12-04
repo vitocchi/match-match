@@ -1,6 +1,6 @@
 package card
 
-const INITIAL_TURN = 0
+const InitialTurn = 0
 
 type Turn uint
 
@@ -9,5 +9,5 @@ func (t *Turn) Proceed() {
 }
 
 func (t *Turn) Reset() {
-	*t = INITIAL_TURN
+	*t = InitialTurn
 }
