@@ -15,10 +15,14 @@ const SimulationTime = 1000
 type SimulationResult []table.Result
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
+	initSeed()
 	p := initPlayers()
 	result := execSimulation(p)
 	fmt.Println(result.toJSON())
+}
+
+func initSeed() {
+	rand.Seed(time.Now().UnixNano())
 }
 
 func initPlayers() []table.Player {
