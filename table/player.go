@@ -3,6 +3,7 @@ package table
 import "github.com/vitocchi/match-match/table/card"
 
 type Strategy interface {
+	Name() string
 	PickCards(cs card.Cards) [2]card.Card
 }
 

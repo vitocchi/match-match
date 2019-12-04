@@ -9,6 +9,7 @@ import (
 type Table struct {
 	cards              card.Cards
 	players            []Player
+	startPlayerIndex   uint
 	currentPlayerIndex uint
 	turn               card.Turn
 }
@@ -21,20 +22,33 @@ func NewTable(p []Player) Table {
 	}
 }
 
-func (t *Table) ExecGame() {
+func (t *Table) ResetTable() {
+	t.startPlayerIndex = (t.startPlayerIndex + uint(1)) % uint(len(t.players))
+	t.cards = card.NewCards()
+	t.resetPlayersPoint()
+	t.resetTurn()
+}
+
+func (t *Table) ExecGame() Result {
+	t.setStartPlayerAsCurrent()
 	for t.isGameGoing() {
 		t.execOneTurn()
 	}
-	fmt.Println(t.players)
+	return t.genResult()
+}
+
+func (t *Table) setStartPlayerAsCurrent() {
+	t.currentPlayerIndex = t.startPlayerIndex
+}
+
+func (t *Table) resetPlayersPoint() {
+	for i := range t.players {
+		t.players[i].point = 0
+	}
 }
 
 func (t *Table) execOneTurn() {
 	cs := t.currentPlayer().pickCards(t.cards)
-	fmt.Println()
-	fmt.Println("turn", t.turn)
-	fmt.Println("player", t.currentPlayerIndex)
-	fmt.Println(cs[0])
-	fmt.Println(cs[1])
 	if cs[0].IsPair(&cs[1]) {
 		t.handleMatch(cs)
 	} else {
@@ -44,7 +58,6 @@ func (t *Table) execOneTurn() {
 }
 
 func (t *Table) handleMatch(cs [2]card.Card) {
-	fmt.Println("match!!")
 	t.cards = t.cards.Drop(cs[0])
 	t.cards = t.cards.Drop(cs[1])
 	t.currentPlayer().getPoint()
@@ -61,7 +74,11 @@ func (t *Table) isGameGoing() bool {
 }
 
 func (t *Table) proceedTurn() {
-	t.turn++
+	t.turn.Proceed()
+}
+
+func (t *Table) resetTurn() {
+	t.turn.Reset()
 }
 
 func (t *Table) currentPlayer() *Player {
@@ -69,8 +86,15 @@ func (t *Table) currentPlayer() *Player {
 }
 
 func (t *Table) changePlayer() {
-	fmt.Println("player change!!")
 	t.currentPlayerIndex = (t.currentPlayerIndex + uint(1)) % uint(len(t.players))
+}
+
+func (t *Table) genResult() Result {
+	pr := make([]PlayerResult, 0, len(t.players))
+	for _, p := range t.players {
+		pr = append(pr, NewPlayerResult(p.strategy.Name(), p.point))
+	}
+	return NewResult(t.turn, pr)
 }
 
 func (t Table) String() string {

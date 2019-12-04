@@ -1,5 +1,13 @@
 package card
 
+const INITIAL_TURN = 0
+
 type Turn uint
 
-const INITIAL_TURN = 0
+func (t *Turn) Proceed() {
+	*t++
+}
+
+func (t *Turn) Reset() {
+	*t = INITIAL_TURN
+}
