@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math/rand"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/vitocchi/match-match/strategy"
@@ -19,6 +23,10 @@ func main() {
 	p := initPlayers()
 	result := execSimulation(p)
 	fmt.Println(result.toJSON())
+
+	file := openResultFile()
+	result.writeCSV(file)
+	file.Close()
 }
 
 func initSeed() {
@@ -26,15 +34,15 @@ func initSeed() {
 }
 
 func initPlayers() []table.Player {
-	p := make([]table.Player, 0, 4)
-	p = append(p, table.NewPlayer(&strategy.RandomStrategy{}))
-	p = append(p, table.NewPlayer(&strategy.RandomStrategy{}))
-	p = append(p, table.NewPlayer(&strategy.RandomStrategy{}))
-	p = append(p, table.NewPlayer(&strategy.RandomStrategy{}))
+	p := make(table.Players, 0, 4)
+	p.AddPlayer(table.NewPlayer(&strategy.RandomStrategy{}, "player1"))
+	p.AddPlayer(table.NewPlayer(&strategy.RandomStrategy{}, "player2"))
+	p.AddPlayer(table.NewPlayer(&strategy.RandomStrategy{}, "player3"))
+	p.AddPlayer(table.NewPlayer(&strategy.RandomStrategy{}, "player4"))
 	return p
 }
 
-func execSimulation(p []table.Player) SimulationResult {
+func execSimulation(p table.Players) SimulationResult {
 	t := table.NewTable(p)
 	results := make([]table.Result, 0, SimulationTime)
 	for i := 0; i < SimulationTime; i++ {
@@ -51,4 +59,42 @@ func (r *SimulationResult) toJSON() string {
 		panic(err)
 	}
 	return string(jsonBytes)
+}
+
+func openResultFile() *os.File {
+	name := strconv.FormatInt(time.Now().Unix(), 10) + ".csv"
+	file, err := os.Create("result/" + name)
+	if err != nil {
+		panic(err)
+	}
+	return file
+}
+
+func (r *SimulationResult) writeCSV(w io.Writer) {
+	table := r.toCSVTable()
+	writer := csv.NewWriter(w)
+	writer.WriteAll(table)
+	if err := writer.Error(); err != nil {
+		panic(err)
+	}
+}
+
+func (r *SimulationResult) toCSVTable() [][]string {
+	if len(*r) == 0 {
+		panic("result is emply")
+	}
+	var table [][]string
+	header := make([]string, 0, len((*r)[0]))
+	for playerName := range (*r)[0] {
+		header = append(header, playerName)
+	}
+	table = append(table, header)
+	for _, result := range *r {
+		var record []string
+		for _, playerName := range header {
+			record = append(record, strconv.Itoa(int(result[playerName])))
+		}
+		table = append(table, record)
+	}
+	return table
 }

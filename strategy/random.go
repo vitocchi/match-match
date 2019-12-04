@@ -8,10 +8,6 @@ import (
 
 type RandomStrategy struct{}
 
-func (s *RandomStrategy) Name() string {
-	return "random"
-}
-
 func (s *RandomStrategy) PickCards(cs card.Cards) [2]card.Card {
 	first := rand.Intn(len(cs))
 	var second int

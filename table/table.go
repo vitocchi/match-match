@@ -8,13 +8,13 @@ import (
 
 type Table struct {
 	cards              card.Cards
-	players            []Player
+	players            Players
 	startPlayerIndex   uint
 	currentPlayerIndex uint
 	turn               card.Turn
 }
 
-func NewTable(p []Player) Table {
+func NewTable(p Players) Table {
 	return Table{
 		cards:   card.NewCards(),
 		players: p,
@@ -89,11 +89,11 @@ func (t *Table) changePlayer() {
 }
 
 func (t *Table) genResult() Result {
-	pr := make([]PlayerResult, 0, len(t.players))
+	r := Result{}
 	for _, p := range t.players {
-		pr = append(pr, NewPlayerResult(p.strategy.Name(), p.point))
+		r[p.name] = p.point
 	}
-	return NewResult(t.turn, pr)
+	return r
 }
 
 func (t Table) String() string {
