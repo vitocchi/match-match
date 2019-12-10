@@ -7,7 +7,7 @@ import (
 )
 
 type Strategy interface {
-	PickCards(cs card.Cards) [2]card.Card
+	PickCards(cm card.CardMap) [2]card.Card
 }
 
 type Player struct {
@@ -22,8 +22,9 @@ func NewPlayer(s Strategy, n string) Player {
 		name:     n,
 	}
 }
-func (p *Player) pickCards(cs card.Cards) [2]card.Card {
-	return p.strategy.PickCards(cs)
+
+func (p *Player) pickCards(cm card.CardMap) [2]card.Card {
+	return p.strategy.PickCards(cm)
 }
 
 func (p *Player) getPoint() {

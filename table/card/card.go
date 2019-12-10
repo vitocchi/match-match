@@ -6,25 +6,19 @@ import (
 )
 
 type Card struct {
-	suit           Suit
-	number         int
-	lastFlippeddAt Turn
+	suit   Suit
+	number int
 }
 
 func NewCard(s Suit, n int) (Card, error) {
 	if isNumberValid(n) {
 		return Card{
-			suit:           s,
-			number:         n,
-			lastFlippeddAt: InitialTurn,
+			suit:   s,
+			number: n,
 		}, nil
 	}
 
 	return Card{}, errors.New("number is invalid")
-}
-
-func (c *Card) equals(other *Card) bool {
-	return c.suit == other.suit && c.number == other.number
 }
 
 func (c *Card) IsPair(other *Card) bool {
@@ -36,5 +30,5 @@ func isNumberValid(n int) bool {
 }
 
 func (c Card) String() string {
-	return fmt.Sprintf("%s %2d lastFlippedAt:%3d", c.suit, c.number, c.lastFlippeddAt)
+	return fmt.Sprintf("%s %2d", c.suit, c.number)
 }
