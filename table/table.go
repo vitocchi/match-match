@@ -47,8 +47,8 @@ func (t *Table) resetPlayersPoint() {
 }
 
 func (t *Table) execOneTurn() {
-	cs := t.currentPlayer().pickCards(t.cardMap)
-	if cs[0].IsPair(&cs[1]) {
+	cs := t.currentPlayer().pickCards(t.cardMap.Copy(), t.turn)
+	if cs[0].IsPair(cs[1]) {
 		t.handleMatch(cs)
 	} else {
 		t.handleUnmatch(cs)

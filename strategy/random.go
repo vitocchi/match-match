@@ -8,11 +8,10 @@ import (
 
 type RandomStrategy struct{}
 
-func (s *RandomStrategy) PickCards(cm card.CardMap) [2]card.Card {
-	copy := cm.Copy()
+func (s *RandomStrategy) PickCards(cm card.CardMap, currentTurn card.Turn) [2]card.Card {
 	first := s.pickCard(cm)
-	copy.Drop(first)
-	second := s.pickCard(copy)
+	cm.Drop(first)
+	second := s.pickCard(cm)
 	return [2]card.Card{first, second}
 }
 

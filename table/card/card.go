@@ -21,7 +21,7 @@ func NewCard(s Suit, n int) (Card, error) {
 	return Card{}, errors.New("number is invalid")
 }
 
-func (c *Card) IsPair(other *Card) bool {
+func (c *Card) IsPair(other Card) bool {
 	return c.suit != other.suit && c.number == other.number
 }
 
