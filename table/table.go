@@ -6,6 +6,7 @@ import (
 	"github.com/vitocchi/match-match/table/card"
 )
 
+// Table orchestrates match-match game
 type Table struct {
 	cardMap            card.CardMap
 	players            Players
@@ -14,6 +15,7 @@ type Table struct {
 	turn               card.Turn
 }
 
+// NewTable is constructor of Table
 func NewTable(p Players) Table {
 	return Table{
 		cardMap: card.NewCardMap(),
@@ -21,6 +23,7 @@ func NewTable(p Players) Table {
 	}
 }
 
+// Reset delete states of current game and set to next game
 func (t *Table) Reset() {
 	t.startPlayerIndex = (t.startPlayerIndex + uint(1)) % uint(len(t.players))
 	t.cardMap = card.NewCardMap()
@@ -28,6 +31,7 @@ func (t *Table) Reset() {
 	t.resetTurn()
 }
 
+// ExecGame is simulate one game and return game result
 func (t *Table) ExecGame() Result {
 	t.setStartPlayerAsCurrent()
 	for t.isGameGoing() {

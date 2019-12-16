@@ -2,8 +2,10 @@ package table
 
 import "errors"
 
+// Players is people playing game
 type Players []Player
 
+// AddPlayer registors player
 func (ps *Players) AddPlayer(p Player) error {
 	if ps.isNameExist(p.name) {
 		return errors.New("name is already exist")
