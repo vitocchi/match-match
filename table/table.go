@@ -6,28 +6,32 @@ import (
 	"github.com/vitocchi/match-match/table/card"
 )
 
+// Table orchestrates match-match game
 type Table struct {
-	cards              card.Cards
+	cardMap            card.CardMap
 	players            Players
 	startPlayerIndex   uint
 	currentPlayerIndex uint
 	turn               card.Turn
 }
 
+// NewTable is constructor of Table
 func NewTable(p Players) Table {
 	return Table{
-		cards:   card.NewCards(),
+		cardMap: card.NewCardMap(),
 		players: p,
 	}
 }
 
+// Reset delete states of current game and set to next game
 func (t *Table) Reset() {
 	t.startPlayerIndex = (t.startPlayerIndex + uint(1)) % uint(len(t.players))
-	t.cards = card.NewCards()
+	t.cardMap = card.NewCardMap()
 	t.resetPlayersPoint()
 	t.resetTurn()
 }
 
+// ExecGame is simulate one game and return game result
 func (t *Table) ExecGame() Result {
 	t.setStartPlayerAsCurrent()
 	for t.isGameGoing() {
@@ -47,8 +51,8 @@ func (t *Table) resetPlayersPoint() {
 }
 
 func (t *Table) execOneTurn() {
-	cs := t.currentPlayer().pickCards(t.cards)
-	if cs[0].IsPair(&cs[1]) {
+	cs := t.currentPlayer().pickCards(t.cardMap.Copy(), t.turn)
+	if cs[0].IsPair(cs[1]) {
 		t.handleMatch(cs)
 	} else {
 		t.handleUnmatch(cs)
@@ -57,19 +61,19 @@ func (t *Table) execOneTurn() {
 }
 
 func (t *Table) handleMatch(cs [2]card.Card) {
-	t.cards = t.cards.Drop(cs[0])
-	t.cards = t.cards.Drop(cs[1])
+	t.cardMap.Drop(cs[0])
+	t.cardMap.Drop(cs[1])
 	t.currentPlayer().getPoint()
 }
 
 func (t *Table) handleUnmatch(cs [2]card.Card) {
-	t.cards = t.cards.Flip(cs[0], t.turn)
-	t.cards = t.cards.Flip(cs[1], t.turn)
+	t.cardMap.Flip(cs[0], t.turn)
+	t.cardMap.Flip(cs[1], t.turn)
 	t.changePlayer()
 }
 
 func (t *Table) isGameGoing() bool {
-	return len(t.cards) != 0
+	return len(t.cardMap) != 0
 }
 
 func (t *Table) proceedTurn() {
@@ -98,5 +102,5 @@ func (t *Table) genResult() Result {
 
 func (t Table) String() string {
 	str := fmt.Sprintln("cards:")
-	return str + fmt.Sprintln(t.cards)
+	return str + fmt.Sprintln(t.cardMap)
 }
