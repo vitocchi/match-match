@@ -8,14 +8,15 @@ import (
 
 type RandomStrategy struct{}
 
-func (s *RandomStrategy) PickCards(cm card.CardMap, currentTurn card.Turn) [2]card.Card {
-	first := s.pickCard(cm)
-	cm.Drop(first)
-	second := s.pickCard(cm)
-	return [2]card.Card{first, second}
+func (s *RandomStrategy) DecideFirstTarget(cm card.CardMap, currentTurn card.Turn) card.Card {
+	return s.decideTargetRandomly(cm)
 }
 
-func (s *RandomStrategy) pickCard(cm card.CardMap) card.Card {
+func (s *RandomStrategy) DecideSecondTarget(cm card.CardMap, currentTurn card.Turn, firstPicked card.Card) card.Card {
+	return s.decideTargetRandomly(cm)
+}
+
+func (s *RandomStrategy) decideTargetRandomly(cm card.CardMap) card.Card {
 	l := len(cm)
 	i := 0
 
