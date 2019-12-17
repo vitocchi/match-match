@@ -5,7 +5,9 @@ import (
 	"fmt"
 )
 
-type ActiveStrategy struct{}
+type ActiveStrategy struct{
+	TurnThreshold int
+}
 
 type pickedMemory struct {
 	number int
@@ -76,12 +78,10 @@ func (l *pickedMemoryList) getMostLikelyMemory() pickedMemory {
 	return (*l)[index]
 }
 
-const THRESHOLD = 8
-
 func (s *ActiveStrategy) DecideFirstTarget(cm card.CardMap, currentTurn card.Turn) card.Card {
 	list := newPickedMemoryList(cm)
 	mostlikely := list.getMostLikelyMemory()
-	if  int(2*currentTurn) - int(mostlikely.turnSum()) <= 8  && mostlikely.haveTwoMemory() {
+	if  int(2*currentTurn) - int(mostlikely.turnSum()) <= s.TurnThreshold  && mostlikely.haveTwoMemory() {
 		return  mostlikely.secondPickedCard
 	}
 	return s.getMostNotLikelyCard(cm)
@@ -108,7 +108,7 @@ func (s *ActiveStrategy) DecideSecondTarget(cm card.CardMap, currentTurn card.Tu
 		}
 	}
 	target := s.getMostLikelyCardOfNumber(cm, firstPicked.Number())
-	if currentTurn - cm[target] < 8 {
+	if int(currentTurn) - int(cm[target]) < s.TurnThreshold {
 		return target
 	}
 	return s.getMostNotLikelyCard(cm)

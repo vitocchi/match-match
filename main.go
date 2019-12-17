@@ -36,10 +36,10 @@ func initSeed() {
 
 func initPlayers() []table.Player {
 	p := make(table.Players, 0, 4)
-	p.AddPlayer(table.NewPlayer(&strategy.DefaultStrategy{}, "player1"))
-	p.AddPlayer(table.NewPlayer(&strategy.ActiveStrategy{}, "player2"))
-	p.AddPlayer(table.NewPlayer(&strategy.RandomStrategy{}, "player3"))
-	p.AddPlayer(table.NewPlayer(&strategy.RandomStrategy{}, "player4"))
+	p.AddPlayer(table.NewPlayer(&strategy.DefaultStrategy{}, "default"))
+	p.AddPlayer(table.NewPlayer(&strategy.ActiveStrategy{16}, "player16"))
+	p.AddPlayer(table.NewPlayer(&strategy.ActiveStrategy{64}, "player64"))
+	p.AddPlayer(table.NewPlayer(&strategy.ActiveStrategy{4}, "player4"))
 	return p
 }
 
