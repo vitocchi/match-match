@@ -1,6 +1,8 @@
 package card
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // CardMap is collection of left card and each cards last flipped turn
 //

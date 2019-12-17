@@ -3,6 +3,7 @@ package table
 import (
 	"math"
 	"math/rand"
+	"sort"
 
 	"github.com/vitocchi/match-match/table/card"
 )
@@ -44,18 +45,27 @@ func NewPlayer(s Strategy, n string) Player {
 
 // pickCards receives cardMap value which lives in only this function, and currentTurn.
 func (p *Player) pickCards(cm card.CardMap, currentTurn card.Turn) [2]card.Card {
-	firstTarget := p.strategy.DecideFirstTarget(cm, currentTurn)
-	firstPicked := pickCard(firstTarget, cm, currentTurn)
+	firstTarget := p.strategy.DecideFirstTarget(cm.Copy(), currentTurn)
+	firstPicked := pickCard(firstTarget, cm.Copy(), currentTurn)
 	cm.Drop(firstPicked)
-	secondTarget := p.strategy.DecideSecondTarget(cm, currentTurn, firstPicked)
-	secondPicked := pickCard(secondTarget, cm, currentTurn)
+	secondTarget := p.strategy.DecideSecondTarget(cm.Copy(), currentTurn, firstPicked)
+	secondPicked := pickCard(secondTarget, cm.Copy(), currentTurn)
 	return [2]card.Card{firstPicked, secondPicked}
 }
 
 // pickCard decides probabilistically which card picked.
+// it start from trying to pick most likely to success to pick card, and loop until the target
 func pickCard(target card.Card, cm card.CardMap, currentTurn card.Turn) card.Card {
-	probability := calcCardsProbability(uint(len(cm)), int(currentTurn)-int(cm[target]))
-	return pickCardsProbabilistically(cm, target, probability)
+	list := newSortedCardList(cm)
+	for _, e := range list {
+		probability := calcCardsProbability(uint(len(cm)), int(currentTurn)-int(cm[target]))
+		pickedCard := pickCardsProbabilistically(cm, e.key, probability)
+		if e.key == target {
+			return pickedCard
+		}
+		cm.Drop(pickedCard)
+	}
+	panic("coudnt pick card")
 }
 
 // 0 ~ 1
@@ -111,4 +121,33 @@ func pickCardsProbabilistically(cm card.CardMap, t card.Card, p probability) car
 
 func (p *Player) getPoint() {
 	p.point++
+}
+
+func newSortedCardList(cm card.CardMap) cardList {
+	l := make(cardList, 0, len(cm))
+	for k, v := range cm {
+		e := entry{k, v}
+		l = append(l, e)
+	}
+	sort.Sort(l)
+	return l
+}
+
+type entry struct {
+	key   card.Card
+	value card.Turn
+}
+
+type cardList []entry
+
+func (l cardList) Len() int {
+	return len(l)
+}
+
+func (l cardList) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
+}
+
+func (l cardList) Less(i, j int) bool {
+	return (l[i].value < l[j].value)
 }
