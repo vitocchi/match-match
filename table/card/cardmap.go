@@ -16,31 +16,18 @@ type CardMap map[Card]Turn
 // NewCardMap is constructor of Map
 func NewCardMap() CardMap {
 	cm := CardMap{}
-	var err error
 	var c Card
 	for i := 1; i <= 13; i++ {
-		c, err = NewCard(Spade, i)
-		if err != nil {
-			panic(err)
-		}
+		c = NewCard(Spade, i)
 		cm[c] = 0
 
-		c, err = NewCard(Heart, i)
-		if err != nil {
-			panic(err)
-		}
+		c = NewCard(Heart, i)
 		cm[c] = 0
 
-		c, err = NewCard(Club, i)
-		if err != nil {
-			panic(err)
-		}
+		c = NewCard(Club, i)
 		cm[c] = 0
 
-		c, err = NewCard(Diamond, i)
-		if err != nil {
-			panic(err)
-		}
+		c = NewCard(Diamond, i)
 		cm[c] = 0
 	}
 

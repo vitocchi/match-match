@@ -1,6 +1,7 @@
 package table
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"sort"
@@ -10,12 +11,12 @@ import (
 
 // Strategy defines players strategy how decide the card try to pick.
 type Strategy interface {
-	// DecideFirstTarget receives cardMap value and currentTurn. It decides which card try to pick at first.
+	// DecideTargets receives cardMap value and currentTurn. It decides which card try to pick.
 	DecideFirstTarget(
 		cm card.CardMap,
 		currentTurn card.Turn,
 	) card.Card
-	// DecideSecondTarget receives cardMap value, currentTurn and first picked card. It decides which card try to pick next.
+	// DecideSecondTarget receives cardMap value, currentTurn and first picked card. It decides which card try to pick next
 	// cardMap must not include first picked card. so before call this function.
 	// So you have to drop the first picked card from cardMap.
 	DecideSecondTarget(
@@ -45,11 +46,18 @@ func NewPlayer(s Strategy, n string) Player {
 
 // pickCards receives cardMap value which lives in only this function, and currentTurn.
 func (p *Player) pickCards(cm card.CardMap, currentTurn card.Turn) [2]card.Card {
+	fmt.Println("-------------------")
+	fmt.Printf("turn:%v\n", currentTurn)
+	fmt.Printf("map:%v\n", cm)
 	firstTarget := p.strategy.DecideFirstTarget(cm.Copy(), currentTurn)
+	fmt.Printf("firstTarget:%v\n", firstTarget)
 	firstPicked := pickCard(firstTarget, cm.Copy(), currentTurn)
+	fmt.Printf("firstPicked:%v\n", firstPicked)
 	cm.Drop(firstPicked)
 	secondTarget := p.strategy.DecideSecondTarget(cm.Copy(), currentTurn, firstPicked)
+	fmt.Printf("secondTarget:%v\n", secondTarget)
 	secondPicked := pickCard(secondTarget, cm.Copy(), currentTurn)
+	fmt.Printf("secondPicked:%v\n", secondPicked)
 	return [2]card.Card{firstPicked, secondPicked}
 }
 

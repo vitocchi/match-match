@@ -1,7 +1,6 @@
 package card
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -10,15 +9,19 @@ type Card struct {
 	number int
 }
 
-func NewCard(s Suit, n int) (Card, error) {
+func NewCard(s Suit, n int) Card {
 	if isNumberValid(n) {
 		return Card{
 			suit:   s,
 			number: n,
-		}, nil
+		}
 	}
 
-	return Card{}, errors.New("number is invalid")
+	panic("number is invalid")
+}
+
+func (c *Card) Number() int {
+	return c.number
 }
 
 func (c *Card) IsPair(other Card) bool {

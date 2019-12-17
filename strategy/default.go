@@ -1,8 +1,6 @@
 package strategy
 
-import (
-	"github.com/vitocchi/match-match/table/card"
-)
+import "github.com/vitocchi/match-match/table/card"
 
 type DefaultStrategy struct{}
 
