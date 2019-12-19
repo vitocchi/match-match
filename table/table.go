@@ -10,9 +10,9 @@ import (
 type Table struct {
 	cardMap            card.CardMap
 	players            Players
-	startPlayerIndex   uint
 	currentPlayerIndex uint
 	turn               card.Turn
+	sheetChanger       uint
 }
 
 // NewTable is constructor of Table
@@ -20,15 +20,23 @@ func NewTable(p Players) Table {
 	return Table{
 		cardMap: card.NewCardMap(),
 		players: p,
+		turn:    1,
 	}
 }
 
 // Reset delete states of current game and set to next game
 func (t *Table) Reset() {
-	t.startPlayerIndex = (t.startPlayerIndex + uint(1)) % uint(len(t.players))
+	t.changeSeats()
 	t.cardMap = card.NewCardMap()
 	t.resetPlayersPoint()
 	t.resetTurn()
+}
+
+// change order of player
+func (t *Table) changeSeats() {
+	changeWith := (t.sheetChanger + uint(1)) % uint(len(t.players))
+	t.players[t.sheetChanger], t.players[changeWith] = t.players[changeWith], t.players[t.sheetChanger]
+	t.sheetChanger = changeWith
 }
 
 // ExecGame is simulate one game and return game result
@@ -41,7 +49,7 @@ func (t *Table) ExecGame() Result {
 }
 
 func (t *Table) setStartPlayerAsCurrent() {
-	t.currentPlayerIndex = t.startPlayerIndex
+	t.currentPlayerIndex = 0
 }
 
 func (t *Table) resetPlayersPoint() {

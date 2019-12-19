@@ -31,16 +31,18 @@ type Strategy interface {
 // Player has theirs game point.
 // Each Player have to identified by unique name in Players struct.
 type Player struct {
-	strategy Strategy
-	point    uint
-	name     string
+	strategy   Strategy
+	memoryRate float64
+	point      uint
+	name       string
 }
 
 // NewPlayer is constructor of Player
-func NewPlayer(s Strategy, n string) Player {
+func NewPlayer(s Strategy, name string, memoryRate float64) Player {
 	return Player{
-		strategy: s,
-		name:     n,
+		strategy:   s,
+		memoryRate: memoryRate,
+		name:       name,
 	}
 }
 
@@ -48,26 +50,33 @@ func NewPlayer(s Strategy, n string) Player {
 func (p *Player) pickCards(cm card.CardMap, currentTurn card.Turn) [2]card.Card {
 	fmt.Println("-------------------")
 	fmt.Printf("turn:%v\n", currentTurn)
+	fmt.Printf("player:%v point:%v\n", p.name, p.point)
 	fmt.Printf("map:%v\n", cm)
+
 	firstTarget := p.strategy.DecideFirstTarget(cm.Copy(), currentTurn)
+	firstPicked := p.pickCard(firstTarget, cm.Copy(), currentTurn)
 	fmt.Printf("firstTarget:%v\n", firstTarget)
-	firstPicked := pickCard(firstTarget, cm.Copy(), currentTurn)
 	fmt.Printf("firstPicked:%v\n", firstPicked)
+
 	cm.Drop(firstPicked)
+
 	secondTarget := p.strategy.DecideSecondTarget(cm.Copy(), currentTurn, firstPicked)
+	secondPicked := p.pickCard(secondTarget, cm.Copy(), currentTurn)
 	fmt.Printf("secondTarget:%v\n", secondTarget)
-	secondPicked := pickCard(secondTarget, cm.Copy(), currentTurn)
 	fmt.Printf("secondPicked:%v\n", secondPicked)
+
 	return [2]card.Card{firstPicked, secondPicked}
 }
 
 // pickCard decides probabilistically which card picked.
 // it start from trying to pick most likely to success to pick card, and loop until the target
-func pickCard(target card.Card, cm card.CardMap, currentTurn card.Turn) card.Card {
+func (p *Player) pickCard(target card.Card, cm card.CardMap, currentTurn card.Turn) card.Card {
 	list := newSortedCardList(cm)
+	fmt.Println("picking card...")
 	for _, e := range list {
-		probability := calcCardsProbability(uint(len(cm)), int(currentTurn)-int(cm[target]))
+		probability := p.calcCardsProbability(uint(len(cm)), int(currentTurn), int(cm[e.key]))
 		pickedCard := pickCardsProbabilistically(cm, e.key, probability)
+		fmt.Printf("%v,%d => %v,%d (%f))\n", e.key, cm[e.key], pickedCard, cm[pickedCard], probability)
 		if e.key == target {
 			return pickedCard
 		}
@@ -83,36 +92,39 @@ type probability float64
 // elapsedTurn is turn passed after the card have been flipped.
 // elapsedTurn of the card which was flipped at last turn is 1.
 // elapsedTurn of the card which never been flipped is 0 or less.
-func calcCardsProbability(cardNum uint, elapsedTurn int) probability {
+func (p *Player) calcCardsProbability(cardNum uint, currentTurn int, lastFlippedAt int) probability {
 	fcn := float64(cardNum)
 
 	// card never been flipped
-	if elapsedTurn <= 0 {
+	if lastFlippedAt == 0 {
 		return probability(1 / fcn)
 	}
+
+	elapsedTurn := currentTurn - lastFlippedAt
 
 	// t <= 3 + (10/n)
 	if float64(elapsedTurn) <= 3+(10/fcn) {
 		return 1
 	}
 
-	// 0.8^t
-	p := math.Pow(float64(0.8), float64(elapsedTurn))
+	// memoryRate^(t-3-(10/n))
+	pr := math.Pow(p.memoryRate, float64(elapsedTurn)-3.0-(10/fcn))
 
-	// 0.8^t <= 1/n
-	if p <= 1.0/fcn {
-		p = 1.0 / fcn
+	// memoryRate^t <= 1/n
+	if pr <= 1.0/fcn {
+		pr = 1.0 / fcn
 	}
-	return probability(p)
+	return probability(pr)
 }
 
 func pickCardsProbabilistically(cm card.CardMap, t card.Card, p probability) card.Card {
-	// if successed to pick target
-	if float64(p) > rand.Float64() {
+	// if target exists in card map and successed to pick target
+	_, ok := cm[t]
+	if ok && float64(p) > rand.Float64() {
 		return t
 	}
 
-	// if failured to pick target
+	// if targe does not exists in card map failured to pick target
 	// pick other card randomly
 	l := len(cm)
 	for {
@@ -157,5 +169,5 @@ func (l cardList) Swap(i, j int) {
 }
 
 func (l cardList) Less(i, j int) bool {
-	return (l[i].value < l[j].value)
+	return (l[i].value > l[j].value)
 }

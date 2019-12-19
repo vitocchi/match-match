@@ -58,3 +58,42 @@ func (cm CardMap) Copy() CardMap {
 	}
 	return copy
 }
+
+// returns most formaly flipped card.
+func (cm CardMap) GetMostFormalyFlipped() Card {
+	var min uint
+	var card Card
+	for c, turn := range cm {
+		if (card == Card{}) || min > uint(turn) {
+			card = c
+			min = uint(turn)
+		}
+	}
+	return card
+}
+
+// return most recently flipped card
+func (cm CardMap) GetMostRecentlyFlipped() Card {
+	var max uint
+	var card Card
+	for c, turn := range cm {
+		if max < uint(turn) || (card == Card{}) {
+			card = c
+			max = uint(turn)
+		}
+	}
+	return card
+}
+
+// return most recently flipped card in number
+func (cm CardMap) GetMostRecentlyFlippedInNumber(number int) Card {
+	var max uint
+	var card Card
+	for c, turn := range cm {
+		if (max < uint(turn) || (card == Card{})) && c.Number() == number {
+			card = c
+			max = uint(turn)
+		}
+	}
+	return card
+}

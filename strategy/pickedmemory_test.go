@@ -83,3 +83,24 @@ func TestGetMostLikelyMemory(t *testing.T) {
 		t.Fatalf("expected %+v acutual %+v", expected, list.getMostLikelyMemory())
 	}
 }
+
+func TestHaveTwoMemory(t *testing.T) {
+	twoMemory := pickedMemory{
+		number:           2,
+		lastPickedCard:   card.NewCard(card.Spade, 2),
+		lastPickedAt:     3,
+		secondPickedCard: card.NewCard(card.Diamond, 2),
+		secondPickedAt:   5,
+	}
+	if !twoMemory.haveTwoMemory() {
+		t.Fatal("memory have two memory but valuated as doesnt")
+	}
+	oneMemory := pickedMemory{
+		number:         2,
+		lastPickedCard: card.NewCard(card.Spade, 2),
+		lastPickedAt:   3,
+	}
+	if oneMemory.haveTwoMemory() {
+		t.Fatal("memory have one memory but valuated as doesnt")
+	}
+}

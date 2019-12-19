@@ -14,7 +14,7 @@ import (
 	"github.com/vitocchi/match-match/table"
 )
 
-const SimulationTime = 1000
+const SimulationTime = 1200
 
 type SimulationResult []table.Result
 
@@ -36,10 +36,10 @@ func initSeed() {
 
 func initPlayers() []table.Player {
 	p := make(table.Players, 0, 4)
-	p.AddPlayer(table.NewPlayer(&strategy.DefaultStrategy{}, "default"))
-	p.AddPlayer(table.NewPlayer(&strategy.ActiveStrategy{16}, "player16"))
-	p.AddPlayer(table.NewPlayer(&strategy.ActiveStrategy{64}, "player64"))
-	p.AddPlayer(table.NewPlayer(&strategy.ActiveStrategy{4}, "player4"))
+	p.AddPlayer(table.NewPlayer(&strategy.RandomStrategy{}, "nobita", 0))
+	p.AddPlayer(table.NewPlayer(&strategy.SteadyStratgy{4}, "suneo", 0.8))
+	p.AddPlayer(table.NewPlayer(&strategy.MemorizeStrategy{10}, "sizuka", 0.8))
+	p.AddPlayer(table.NewPlayer(&strategy.MemorizeStrategy{1000}, "jaian", 0.6))
 	return p
 }
 
